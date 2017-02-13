@@ -5,7 +5,7 @@ var app = express();
 var http = require('http').Server(app);
 var url = require('url');
 var querystring = require('querystring');
-var secret = require('./secretToken.js').secret;
+var secret = process.env.FLASH_TOKEN;
 var io = IO(http);
 
 app.use(function(req, res, next) {
@@ -13,7 +13,7 @@ app.use(function(req, res, next) {
   next();
 })
 app.get('/', function(req, res) {
-  res.status(200).send('Halo')
+  res.status(200).send('Halo');
 })
 
 http.listen(3000);
@@ -33,6 +33,9 @@ io.sockets.on('connection', function(socket) {
   console.log('connection made with ' + socket);
   socket.on('flash', function() {
     io.emit('flash')
+  })
+  socket.on('dance', function() {
+    io.emit('dance')
   })
   socket.on('on', function() {
     io.emit('on')
