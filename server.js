@@ -1,22 +1,8 @@
 "use strict"
-var express = require('express');
-var IO = require('socket.io');
-var app = express();
-var http = require('http').Server(app);
+var io = require('socket.io').listen(3000);
 var url = require('url');
 var querystring = require('querystring');
 var secret = process.env.FLASH_TOKEN;
-var io = IO(http);
-
-app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
-})
-app.get('/', function(req, res) {
-  res.status(200).send('Halo');
-})
-
-http.listen(3000);
 
 io.set('authorization', function(handshake, cb) {
   var query = url.parse(handshake.url).query;
@@ -24,7 +10,7 @@ io.set('authorization', function(handshake, cb) {
   if (token === secret) {
     cb(null, true);
   } else {
-    console.log('no auth',token, secret)
+    console.log('no auth, user token: ', token)
     cb('Not Authorized, suckaaa!!', false)
   }
 })
@@ -38,6 +24,7 @@ io.sockets.on('connection', function(socket) {
     io.emit('dance')
   })
   socket.on('on', function() {
+    console.log('emitting on')
     io.emit('on')
   })
   socket.on('onYellow', function() {
