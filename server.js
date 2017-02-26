@@ -15,6 +15,8 @@ io.set('authorization', function(handshake, cb) {
   }
 })
 
+let blockSignals = false;
+
 io.sockets.on('connection', function(socket) {
   console.log('connection made with ' + socket);
   socket.on('flash', function() {
@@ -24,22 +26,34 @@ io.sockets.on('connection', function(socket) {
     io.emit('dance')
   })
   socket.on('on', function() {
-    console.log('emitting on')
-    io.emit('on')
+    if (!blockSignals) {
+      console.log('emitting on')
+      io.emit('on')
+    }
+    blockSignals = true;
   })
   socket.on('onYellow', function() {
-    io.emit('onYellow')
+    if (!blockSignals) {
+      io.emit('onYellow')
+    }
+    blockSignals = true;
   })
   socket.on('onRed', function() {
-    io.emit('onRed')
+    if (!blockSignals) {
+      io.emit('onRed')
+    }
+    blockSignals = true;
   })
   socket.on('off', function() {
+    blockSignals = false;
     io.emit('off')
   })
   socket.on('offYellow', function() {
+    blockSignals = false;
     io.emit('offYellow')
   })
   socket.on('offRed', function() {
+    blockSignals = false;
     io.emit('offRed')
   })
 })
